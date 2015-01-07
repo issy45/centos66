@@ -1,0 +1,10 @@
+ServerName localhost
+NameVirtualHost *:80
+
+<VirtualHost *:80>
+   ServerName localhost
+    DocumentRoot /vagrant
+    <Directory /vagrant>
+        AllowOverride all
+    </Directory>
+</VirtualHost>

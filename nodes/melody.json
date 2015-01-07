@@ -1,0 +1,10 @@
+{
+  "db": {
+    "rootpass": "",
+    "user":     "test",
+    "pass":     "test"
+  },
+  "run_list": [
+    "recipe[lamp]"
+  ]
+}
