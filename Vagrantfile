@@ -88,17 +88,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.cookbooks_path = ["./cookbooks", "./site-cookbooks"]
     chef.roles_path = "./roles"
     chef.data_bags_path = "./data_bags"
-    chef.add_recipe "lamp"
-    #chef.add_role "web"
-  
-    # You may also specify custom JSON attributes:
-    chef.json = {
-      :db => {
-        :rootpass => "",
-        :user => "test",
-        :pass => "test"
-      }
-    }
+    chef.run_list = %w[
+      recipe[lamp]
+      recipe[lamp::ruby]
+      recipe[lamp::install]
+    ]
   end
 
   # Enable provisioning with chef server, specifying the chef server URL,
