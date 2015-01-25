@@ -1,53 +1,89 @@
-#
-# Cookbook Name:: lamp
-# Recipe:: default
-#
-# Copyright 2015, YOUR_COMPANY_NAME
-#
-# All rights reserved - Do Not Redistribute
-#
 
-package 'git' do
+git "/home/#{node['ruby-env']['user']}/.rbenv" do
+  repository node['ruby-env']['rbenv_url']
+  reference 'master'
+  action :sync
+  group node['ruby-env']['group']
+  user node['ruby-env']['user']
+end
+
+# bash_profileが他のレシピでも変更されている場合は、このやり方だとダメ
+template '.bash_profile' do
+  source 'bash_profile.erb'
+  path "/home/#{node['ruby-env']['user']}/.bash_profile"
+  mode '0644'
+  owner node['ruby-env']['user']
+  group node['ruby-env']['group']
+  not_if "grep rbenv /home/#{node['ruby-env']['user']}/.bash_profile"
+end
+
+directory "/home/#{node['ruby-env']['user']}/.rbenv/plugins" do
+  owner node['ruby-env']['user']
+  group node['ruby-env']['group']
+  mode '0755'
+  action :create
+end
+
+%w(ruby-build rbenv-default-gems rbenv-gem-rehash).each do |plgin|
+  git "/home/#{node['ruby-env']['user']}/.rbenv/plugins/#{plgin}" do
+    repository node['ruby-env']["#{plgin}_url"]
+    reference 'master'
+    action :sync
+    group node['ruby-env']['group']
+    user node['ruby-env']['user']
+  end
+end
+
+template 'default-gems' do
+  source 'default-gems.erb'
+  path "/home/#{node['ruby-env']['user']}/.rbenv/default-gems"
+  mode '0755'
+  owner node['ruby-env']['user']
+  group node['ruby-env']['group']
+  not_if { File.exists?("/home/#{node['ruby-env']['user']}/.rbenv/default-gems") }
+end
+
+execute "rbenv install #{node['ruby-env']['version']}" do
+  command "/home/#{node['ruby-env']['user']}/.rbenv/bin/rbenv install #{node['ruby-env']['version']}"
+  environment 'HOME' => "/home/#{node['ruby-env']['user']}"
+  user node['ruby-env']['user']
+  group node['ruby-env']['group']
+  not_if { File.exists?("/home/#{node['ruby-env']['user']}/.rbenv/versions/#{node['ruby-env']['version']}") }
+end
+
+execute "rbenv global #{node['ruby-env']['version']}" do
+  command "/home/#{node['ruby-env']['user']}/.rbenv/bin/rbenv global #{node['ruby-env']['version']}"
+  environment 'HOME' => "/home/#{node['ruby-env']['user']}"
+  user node['ruby-env']['user']
+  group node['ruby-env']['group']
+  not_if "grep #{node['ruby-env']['version']} /home/#{node['ruby-env']['user']}/.rbenv/version"
+end
+
+# これないとRailsのinstallが途中で止まる
+execute "resolv.option" do
+  not_if "grep 'options single-request-reopen' /etc/resolv.conf"
+  command "echo 'options single-request-reopen' >> /etc/resolv.conf"
+  action :run
+end# これないとRailsのinstallが途中で止まる
+execute "resolv.option" do
+  not_if "grep 'options single-request-reopen' /etc/resolv.conf"
+  command "echo 'options single-request-reopen' >> /etc/resolv.conf"
+  action :run
+end
+#-------------------
+# Railsのインストール
+#-------------------
+
+# nokogiriにはこのオプションが必要
+gem_package "nokogiri" do
+  gem_binary "/home/#{node['ruby-env']['user']}/.rbenv/shims/gem"
   action :install
+  options "-- --use-system-libraries"
 end
 
-# rbenvグループを作成して/usr/local/rbenvを実行権限のユーザーを追加する(今回はvagrantユーザーとveeweeユーザーを追加していますお好みによって変更してください)
-group "rbenv" do
-  action :create
-  members "vagrant"
-  append true
-end
-
-# gitからrbenvを落としてくる(#{node.user}はrootです)
-git "/usr/local/rbenv" do
-  repository "git://github.com/sstephenson/rbenv.git"
-  reference "master"
-  action :checkout
-  user node['user']
-  group "rbenv"
-end
-
-# ruby-build用のpluginフォルダを作成する
-directory "/usr/local/rbenv/plugins" do
-  owner node['user']
-  group "rbenv"
-  mode "0755"
-  action :create
-end
-
-
-# rbenvのbash設定を追加
-template "/etc/profile.d/rbenv.sh" do
-  owner node['user']
-  group node['user']
-  mode 0644
-end
-
-# ruby-buildを落としてくる
-git "/usr/local/rbenv/plugins/ruby-build" do
-  repository "git://github.com/sstephenson/ruby-build.git"
-  reference "master"
-  action :checkout
-  user node['user']
-  group "rbenv"
+%w(atomic rails).each do |pkg|
+  gem_package pkg do
+    gem_binary "/home/#{node['ruby-env']['user']}/.rbenv/shims/gem"
+    action :install
+  end
 end

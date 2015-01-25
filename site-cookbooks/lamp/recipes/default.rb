@@ -27,16 +27,18 @@ end
 #  sudo yum install -y php
 #  sudo yum install -y php-mbstring
 #  sudo yum install -y php-mysql
-package "php" do
+%w(php php-mbstring php-mysql).each do |pkg|
+  package pkg do
     action :install
-end
-package "php-mbstring" do
-    action :install
-end
-package "php-mysql" do
-    action :install
+  end
 end
 
+#ruby関連？ruby入れるのに使う
+%w(gcc openssl-devel readline-devel git libxml2-devel libxslt-devel).each do |pkg|
+  package pkg do
+    action :install
+  end
+end
 
 #--------------------------------------
 # service
