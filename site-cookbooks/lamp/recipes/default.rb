@@ -19,8 +19,10 @@ end
 
 # MySQLをインストールする
 #  sudo yum install -y mysql-server
-package "mysql-server" do
+%w(mysql-server mysql-devel).each do |pkg|
+  package pkg do
     action :install
+  end
 end
 
 # PHPと関連するモジュールをインストールする
