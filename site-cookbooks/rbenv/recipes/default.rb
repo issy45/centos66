@@ -83,7 +83,7 @@ gem_package "nokogiri" do
   options "-- --use-system-libraries"
 end
 
-%w(atomic rails).each do |pkg|
+%w(atomic rails passenger).each do |pkg|
   gem_package pkg do
     gem_binary "/home/#{node['ruby-env']['user']}/.rbenv/shims/gem"
     action :install
