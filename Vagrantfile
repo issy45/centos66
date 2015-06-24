@@ -84,6 +84,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
   #
+  config.vm.provision :shell, :path => "./kick-start.sh"
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = ["./cookbooks", "./site-cookbooks"]
     chef.roles_path = "./roles"
