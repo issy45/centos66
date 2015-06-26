@@ -36,43 +36,6 @@ end
 end
 
 #--------------------------------------
-# service
-#--------------------------------------
-
-# Apacheの起動と自動起動の設定を行う
-#  sudo service httpd start
-#  sudo chkconfig on
-service "httpd" do
-  action [:start, :enable]
-end
-
-# MySQLの起動と自動起動の設定を行う
-#  sudo service mysqld start
-#  sudo chkconfig mysqld on
-service 'mysqld' do
-  action [:start, :enable]
-end
-
-# iptablesのサービスを指定
-service "iptables" do
-  supports :status => true, :restart => true, :reload => true
-  action [:start, :enable]
-end
-
-
-#--------------------------------------
-# execute
-#--------------------------------------
-
-# MySQLにユーザー作成のSQLを実行するコマンドを用意する
-#  /usr/bin/mysql -u root --password="パスワード" < /tmp/grants.sql
-execute "mysql-create-user" do
-    command "/usr/bin/mysql -u root --password=\"#{node['db']['rootpass']}\" < /tmp/grants.sql"
-    action :nothing
-end
-
-
-#--------------------------------------
 # template
 #--------------------------------------
 
@@ -115,4 +78,40 @@ template "timezone.ini" do
   source "timezone.ini.erb"
   mode 0644
   notifies :restart, 'service[httpd]'
+end
+
+#--------------------------------------
+# service
+#--------------------------------------
+
+# Apacheの起動と自動起動の設定を行う
+#  sudo service httpd start
+#  sudo chkconfig on
+service "httpd" do
+  action [:start, :enable]
+end
+
+# MySQLの起動と自動起動の設定を行う
+#  sudo service mysqld start
+#  sudo chkconfig mysqld on
+service 'mysqld' do
+  action [:start, :enable]
+end
+
+# iptablesのサービスを指定
+service "iptables" do
+  supports :status => true, :restart => true, :reload => true
+  action [:start, :enable]
+end
+
+
+#--------------------------------------
+# execute
+#--------------------------------------
+
+# MySQLにユーザー作成のSQLを実行するコマンドを用意する
+#  /usr/bin/mysql -u root --password="パスワード" < /tmp/grants.sql
+execute "mysql-create-user" do
+    command "/usr/bin/mysql -u root --password=\"#{node['db']['rootpass']}\" < /tmp/grants.sql"
+    action :nothing
 end
