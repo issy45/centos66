@@ -36,7 +36,7 @@ end
 end
 
 #--------------------------------------
-# template
+# apache
 #--------------------------------------
 
 # vhost.confを設置する
@@ -48,13 +48,32 @@ template "vhost.conf" do
   notifies :restart, 'service[httpd]'
 end
 
-# テンプレートから設定を上書き作成
-template "/etc/sysconfig/iptables" do
-  source "iptables"
-  owner "root"
-  group "root"
-  mode 0600
-  notifies :restart, 'service[iptables]'
+# timezoneを設定するためのiniを設置する
+#  sudo vi /etc/php.d/timezone.ini
+template "timezone.ini" do
+  path "/etc/php.d/timezone.ini"
+  source "timezone.ini.erb"
+  mode 0644
+  notifies :restart, 'service[httpd]'
+end
+
+# Apacheの起動と自動起動の設定を行う
+#  sudo service httpd start
+#  sudo chkconfig on
+service "httpd" do
+  action [:start, :enable]
+end
+
+
+#--------------------------------------
+# mysql
+#--------------------------------------
+
+# MySQLの起動と自動起動の設定を行う
+#  sudo service mysqld start
+#  sudo chkconfig mysqld on
+service 'mysqld' do
+  action [:start, :enable]
 end
 
 # MySQLのユーザーを作成するためのSQLを設置し、SQLを実行する
@@ -71,47 +90,28 @@ template "/tmp/grants.sql" do
     notifies :run, "execute[mysql-create-user]", :immediately
 end
 
-# timezoneを設定するためのiniを設置する
-#  sudo vi /etc/php.d/timezone.ini
-template "timezone.ini" do
-  path "/etc/php.d/timezone.ini"
-  source "timezone.ini.erb"
-  mode 0644
-  notifies :restart, 'service[httpd]'
+# MySQLにユーザー作成のSQLを実行するコマンドを用意する
+#  /usr/bin/mysql -u root --password="パスワード" < /tmp/grants.sql
+execute "mysql-create-user" do
+    command "/usr/bin/mysql -u root --password=\"#{node['db']['rootpass']}\" < /tmp/grants.sql"
+    action :nothing
 end
 
 #--------------------------------------
-# service
+# iptables
 #--------------------------------------
 
-# Apacheの起動と自動起動の設定を行う
-#  sudo service httpd start
-#  sudo chkconfig on
-service "httpd" do
-  action [:start, :enable]
-end
-
-# MySQLの起動と自動起動の設定を行う
-#  sudo service mysqld start
-#  sudo chkconfig mysqld on
-service 'mysqld' do
-  action [:start, :enable]
+# テンプレートから設定を上書き作成
+template "/etc/sysconfig/iptables" do
+  source "iptables"
+  owner "root"
+  group "root"
+  mode 0600
+  notifies :restart, 'service[iptables]'
 end
 
 # iptablesのサービスを指定
 service "iptables" do
   supports :status => true, :restart => true, :reload => true
   action [:start, :enable]
-end
-
-
-#--------------------------------------
-# execute
-#--------------------------------------
-
-# MySQLにユーザー作成のSQLを実行するコマンドを用意する
-#  /usr/bin/mysql -u root --password="パスワード" < /tmp/grants.sql
-execute "mysql-create-user" do
-    command "/usr/bin/mysql -u root --password=\"#{node['db']['rootpass']}\" < /tmp/grants.sql"
-    action :nothing
 end
