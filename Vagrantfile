@@ -90,8 +90,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.roles_path = "./roles"
     chef.data_bags_path = "./data_bags"
     chef.run_list = %w[
-      recipe[lamp]
+      recipe[apache]
+      recipe[php]
+      recipe[mysql]
       recipe[rbenv]
+      recipe[iptables]
     ]
   end
 
