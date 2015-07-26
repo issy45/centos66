@@ -9,8 +9,10 @@
 
 # Apacheをインストールする
 #  sudo yum install -y httpd
-package "httpd" do
+%w(httpd httpd-devel).each do |pkg|
+  package pkg do
     action :install
+  end
 end
 
 # vhost.confを設置する
