@@ -35,7 +35,7 @@ execute "install_php" do
   group "root"
   command <<-EOH
         cd /usr/local/src
-        tar php-5.6.7.tar.gz
+        tar zxvf php-5.6.7.tar.gz
         cd php-5.6.7
         ./configure \
          --with-apxs2 \
