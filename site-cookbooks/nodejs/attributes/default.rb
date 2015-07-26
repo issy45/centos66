@@ -1,0 +1,1 @@
+default['nodejs']['version'] = "v0.12.2"
