@@ -64,6 +64,16 @@ execute "install_php" do
   action :run
 end
 
+execute "composer-install" do
+  user "root"
+  group "root"
+  command <<-EOH
+    curl -sS https://getcomposer.org/installer | php;
+    mv composer.phar /usr/local/bin/composer
+  EOH
+  not_if { ::File.exists?("/usr/local/bin/composer")}
+end
+
 template "/usr/local/lib/php.ini" do
   source "php.ini"
   owner "root"
