@@ -7,9 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 
-# Apacheをインストールする
-#  sudo yum install -y httpd
-%w(curl curl-devel libvpx-devel libjpeg-devel libpng-devel net-snmp-devel).each do |pkg|
+%w(curl curl-devel libvpx-devel libjpeg-devel libpng-devel net-snmp-devel gcc gcc-c++ openssl-devel readline-devel git libxml2-devel libxslt-devel libffi-devel).each do |pkg|
   package pkg do
     action :install
   end
@@ -36,12 +34,3 @@ end
     source "/tmp/#{rpm}"
   end
 end
-
-# execute "install_mcrypt" do
-#   user "root"
-#   group "root"
-#   command <<-EOH
-#     yum localinstall /tmp/libmcrypt-2.5.8-9.el6.x86_64.rpm /tmp/libmcrypt-devel-2.5.8-9.el6.x86_64.rpm
-#   EOH
-#   action :run
-# end

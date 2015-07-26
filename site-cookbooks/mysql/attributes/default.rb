@@ -1,3 +1,3 @@
 default["db"]["rootpass"] = ""
-default["db"]["user"] = "test"
-default["db"]["pass"] = "test"
+default["db"]["user"]     = "vagrant"
+default["db"]["pass"]     = "vagrant"

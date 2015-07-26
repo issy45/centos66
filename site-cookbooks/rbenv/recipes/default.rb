@@ -1,10 +1,3 @@
-#ruby関連？ruby入れるのに使う
-%w(gcc openssl-devel readline-devel git libxml2-devel libxslt-devel libffi-devel).each do |pkg|
-  package pkg do
-    action :install
-  end
-end
-
 git "/home/#{node['ruby-env']['user']}/.rbenv" do
   repository node['ruby-env']['rbenv_url']
   reference 'master'

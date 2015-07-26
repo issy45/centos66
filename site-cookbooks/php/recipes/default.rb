@@ -21,22 +21,22 @@
 # p "#{node['software']['php']['name']}"
 # p "#{node['software']['php']['source_uri']}"
 
-remote_file "/usr/local/src/php-5.6.7.tar.gz" do
-  source "http://jp2.php.net/distributions/php-5.6.7.tar.gz"
+remote_file "/usr/local/src/" + node['software']['php']['name'] do
+  source node['software']['php']['source_uri']
   owner "root"
   group "root"
   mode "0644"
-  not_if "test -e /usr/local/src/php-5.6.7.tar.gz"
+  not_if "test -e /usr/local/src/#{node['software']['php']['name']}"
 end
 
 execute "install_php" do
-  not_if { File.exists?("/usr/local/src/php-5.6.7") }
+  not_if { File.exists?("/usr/local/src/#{node['software']['php']['dir_name']}") }
   user "root"
   group "root"
   command <<-EOH
         cd /usr/local/src
-        tar zxvf php-5.6.7.tar.gz
-        cd php-5.6.7
+        tar zxvf #{node['software']['php']['name']}
+        cd #{node['software']['php']['dir_name']}
         ./configure \
          --with-apxs2 \
          --enable-mbstring \
