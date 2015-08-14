@@ -34,3 +34,20 @@ end
     source "/tmp/#{rpm}"
   end
 end
+
+%w{/home/vagrant}.each do |file|
+  execute "#{file} permission" do
+    command "chmod 0755 #{file}"
+    user "vagrant"
+    group "vagrant"
+    action :run
+  end
+end
+
+directory "/home/vagrant/public_html" do
+  owner "vagrant"
+  group "vagrant"
+  recursive true
+  mode 0755
+  action :create
+end

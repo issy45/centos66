@@ -15,18 +15,22 @@
   end
 end
 
+# vhttpd.confを設置する
+#  sudo vi /etc/httpd/conf/httpd.conf
+template "httpd.conf" do
+  path "/etc/httpd/conf/httpd.conf"
+  source "httpd.conf.erb"
+  owner "root"
+  group "root"
+  mode 0644
+end
+
 # vhost.confを設置する
 #  sudo vi /etc/httpd/conf.d/vhost.conf
 template "vhost.conf" do
   path "/etc/httpd/conf.d/vhost.conf"
   source "vhost.conf.erb"
+  owner "root"
+  group "root"
   mode 0644
-  notifies :restart, 'service[httpd]'
-end
-
-# Apacheの起動と自動起動の設定を行う
-#  sudo service httpd start
-#  sudo chkconfig on
-service "httpd" do
-  action [:start, :enable]
 end

@@ -74,9 +74,16 @@ execute "composer-install" do
   not_if { ::File.exists?("/usr/local/bin/composer")}
 end
 
-template "/usr/local/lib/php.ini" do
-  source "php.ini"
+template "/etc/httpd/conf.d/php.conf" do
+  source "php.conf.erb"
   owner "root"
   group "root"
-  mode 0604
+  mode 0644
+end
+
+template "/etc/php.ini" do
+  source "php.ini.erb"
+  owner "root"
+  group "root"
+  mode 0664
 end
