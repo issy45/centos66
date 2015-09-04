@@ -15,6 +15,14 @@
   end
 end
 
+template "my.cnf" do
+  path "/etc/my.cnf"
+  source "my.cnf.erb"
+  owner "root"
+  group "root"
+  mode 0644
+end
+
 # MySQLの起動と自動起動の設定を行う
 #  sudo service mysqld start
 #  sudo chkconfig mysqld on
