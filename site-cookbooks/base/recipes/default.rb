@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: lamp
+# Cookbook Name:: base
 # Recipe:: default
 #
 # Copyright 2015, YOUR_COMPANY_NAME
@@ -7,7 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 
-%w(curl curl-devel libvpx-devel libjpeg-devel libpng-devel net-snmp-devel gcc gcc-c++ openssl-devel readline-devel git libxml2-devel libxslt-devel libffi-devel).each do |pkg|
+%w(wget curl curl-devel libvpx-devel libjpeg-devel libpng-devel net-snmp-devel gcc gcc-c++ openssl-devel readline-devel git libxml2-devel libxslt-devel libffi-devel).each do |pkg|
   package pkg do
     action :install
   end
