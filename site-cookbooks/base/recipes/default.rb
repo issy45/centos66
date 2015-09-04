@@ -7,7 +7,28 @@
 # All rights reserved - Do Not Redistribute
 #
 
-%w(wget curl curl-devel libvpx-devel libjpeg-devel libpng-devel net-snmp-devel gcc gcc-c++ openssl-devel readline-devel git libxml2-devel libxslt-devel libffi-devel).each do |pkg|
+# setenforce 0で一時的にSELinuxを無効化し、
+# /etc/selinux/configの作成を通知する
+# selinuxenabledコマンドの終了ステータスが0(selinuxが有効)の場合だけ実行される
+execute "disable selinux enforcement" do
+  only_if "which selinuxenabled && selinuxenabled"
+  command "setenforce 0"
+  action :run
+  notifies :create, "template[/etc/selinux/config]"
+end
+
+# 再起動の際もSELinuxの無効状態を維持するために、
+# /etc/selinux/configに、設定を記述する
+template "/etc/selinux/config" do
+  source "config.erb"
+  variables(
+    :selinux => "disabled",
+    :selinuxtype => "targeted"
+  )
+  action :nothing
+end
+
+%w(wget curl git gcc gcc-c++ curl-devel libvpx-devel libjpeg-devel libpng-devel net-snmp-devel openssl-devel readline-devel libxml2-devel libxslt-devel libffi-devel).each do |pkg|
   package pkg do
     action :install
   end
