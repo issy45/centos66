@@ -11,8 +11,7 @@ NameVirtualHost *:80
     CustomLog /etc/httpd/logs/access_log custom
     SetEnv FUEL_ENV test
     <Directory "/home/vagrant/public_html">
-        Options FollowSymLinks ExecCGI
-        Options Multiviews
+        Options Multiviews FollowSymLinks ExecCGI
         AllowOverride All
         Order allow,deny
         Allow from all
