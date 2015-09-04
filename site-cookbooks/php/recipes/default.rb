@@ -7,20 +7,6 @@
 # All rights reserved - Do Not Redistribute
 #
 
-# PHPと関連するモジュールをインストールする
-#  sudo yum install -y php
-#  sudo yum install -y php-mbstring
-#  sudo yum install -y php-mysql
-# %w(php php-mbstring php-mysql).each do |pkg|
-#   package pkg do
-#     action :install
-#   end
-# end
-
-
-# p "#{node['software']['php']['name']}"
-# p "#{node['software']['php']['source_uri']}"
-
 remote_file "/usr/local/src/" + node['software']['php']['name'] do
   source node['software']['php']['source_uri']
   owner "root"
