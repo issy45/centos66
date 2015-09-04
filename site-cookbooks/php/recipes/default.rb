@@ -41,7 +41,8 @@ execute "install_php" do
          --with-mcrypt \
          --enable-ftp \
          --enable-sockets \
-         --enable-pcntl
+         --enable-pcntl \
+         --enable-zip
         make
         /etc/init.d/httpd stop
         make install
